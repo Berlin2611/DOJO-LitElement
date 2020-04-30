@@ -1,16 +1,28 @@
 import { LitElement, html, css } from 'lit-element';
 import './views/view-home';
 import './views/view-about';
+import './views/components/passing-properties';
+import 'dile-tabs/dile-tabs';
+import 'dile-pages/dile-pages';
 export class PwaLive extends LitElement {
 
-    static get styles(){
+    static get styles() {
         return css `
         :host{
             display: block;
-            padding: 15px;
+            --dile-tab-background-color: #000000;
+            --dile-tab-selected-background-color: #ffffff;
+            --dile-tab-selected-text-color: #000000;
+            --dile-tab-text-color: #ffffff;
         }
-        h1{
+        h2{
             font-weight: 300;
+            color: #ffffff;
+            margin-top: 5px;
+        }
+        .margen{
+            margin-left: 600px;
+            margin-top: 6px
         }
         .page{
             display: none;
@@ -22,46 +34,39 @@ export class PwaLive extends LitElement {
     }
 
 
-    static get properties(){
-        return{
+    static get properties() {
+        return {
             selected: { type: String },
         };
     }
 
-    constructor(){
+    constructor() {
         super();
         this.selected = 'home';
-    }   
+    }
 
     render() {
-        return html`
-            <h1> My App </h1>
-
-            <nav>
-                <a href="#" @click="${this.go}" name="home">Home</a>
-                <a href="#" @click="${this.go}" name="about">About</a>
-                <a href="#">Contact</a>
-            </nav>
-            <main>
-             
-                    <view-home  class="page" ?active="${this.selected === 'home'}"></view-home>
-                    <view-about class="page" ?active="${this.selected === 'about'}"></view-about>             
-               
-            </main>
+        return html `
+         <link rel="stylesheet" href="https://bootswatch.com/4/lux/bootstrap.min.css">
+         <nav class="row bg-primary">
+             <div class="col-3 mr-5">
+                 <h2 class=""> My App </h2>
+             </div>
+             <div class="col-8">
+                <dile-tabs selected="${this.selected}" attrForSelected="name" @dile-tabs-selected-changed="${this.selectedChanged}" class="margen">
+                    <dile-tab name="home">Home</dile-tab>
+                    <dile-tab name="about">About</dile-tab>
+                </dile-tabs>
+            </div>
+        </nav>
+                <dile-pages selected="${this.selected}" attrForSelected="name">
+                    <view-home name="home" ?active="${this.selected === 'home'}"></view-home>
+                    <view-about name="about" ?active="${this.selected === 'about'}"></view-about>
+                </dile-pages> 
         `;
     }
-    goHome(e){
-        e.preventDefault();
-        this.selected = 'home';
-    }
-    goAbout(e){
-        e.preventDefault();
-        this.selected = 'about';
-    }
-    go(e){
-        e.preventDefault();
-        let page = e.target.getAttribute('name');
-        this.selected = page;
+    selectedChanged(e) {
+        this.selected = e.detail;
     }
 }
 customElements.define('pwa-live', PwaLive);
